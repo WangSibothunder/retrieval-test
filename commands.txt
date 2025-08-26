@@ -1,0 +1,14 @@
+commands.txtµÄÄÚÈÝ£º
+python dateset.py
+python hot.py --dataset mmlu --topk 1
+python hot.py --dataset mmlu --topk 5
+python hot.py --dataset mmlu --topk 10
+python hot.py --dataset nq --topk 1
+python hot.py --dataset nq --topk 5
+python hot.py --dataset nq --topk 10
+python hot.py --dataset hotpotqa --topk 1
+python hot.py --dataset hotpotqa --topk 5
+python hot.py --dataset hotpotqa --topk 10
+python hot.py --dataset triviaqa --topk 1
+python hot.py --dataset triviaqa --topk 5
+python hot.py --dataset triviaqa --topk 10

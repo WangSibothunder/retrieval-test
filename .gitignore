@@ -1,0 +1,95 @@
+# 虚拟环境
+.venv/
+venv/
+env/
+ENV/
+
+# 大型数据文件
+*.npy
+*.bin
+*.pkl
+*.h5
+*.hdf5
+
+# 生成的图片和统计文件
+*.png
+*.jpg
+*.jpeg
+*.pdf
+freq_stats_*.txt
+
+# Python缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# 分发 / 打包
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# 安装器日志
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 单元测试 / 覆盖率报告
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# 环境变量
+.env
+.venv
+ENV/
+env/
+.ENV/
+
+# IDE设置
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统生成的文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 日志文件
+*.log
