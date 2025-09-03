@@ -1,4 +1,5 @@
-commands.txt的内容：
+=======================================
+hot.py:
 python dateset.py
 python hot.py --dataset mmlu --topk 1
 python hot.py --dataset mmlu --topk 5
@@ -12,3 +13,18 @@ python hot.py --dataset hotpotqa --topk 10
 python hot.py --dataset triviaqa --topk 1
 python hot.py --dataset triviaqa --topk 5
 python hot.py --dataset triviaqa --topk 10
+========================================
+hptpair.py
+commands.txt的内容：
+python hotpair.py --dataset mmlu --topk 3
+python hotpair.py --dataset mmlu --topk 5
+python hotpair.py --dataset mmlu --topk 10
+python hotpair.py --dataset nq --topk 3
+python hotpair.py --dataset nq --topk 5
+python hotpair.py --dataset nq --topk 10
+python hotpair.py --dataset hotpotqa --topk 3
+python hotpair.py --dataset hotpotqa --topk 5
+python hotpair.py --dataset hotpotqa --topk 10
+python hotpair.py --dataset triviaqa --topk 3
+python hotpair.py --dataset triviaqa --topk 5
+python hotpair.py --dataset triviaqa --topk 10
