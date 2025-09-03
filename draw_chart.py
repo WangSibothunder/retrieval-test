@@ -71,7 +71,7 @@ def collect_data():
     for db in databases:
         data[db] = {}
         for top in top_configs:
-            file_path = f'freq_stats_{db}_{top}.txt'
+            file_path = f'data/stats/freq_stats_{db}_{top}.txt'
             percentage = extract_top10_percentage(file_path)
             data[db][top] = percentage
             print(f"{db} {top}: {percentage}%")
@@ -129,8 +129,11 @@ def create_chart(data):
     # 调整布局
     plt.tight_layout()
     
+    # 确保输出目录存在
+    os.makedirs('output/charts', exist_ok=True)
+    
     # 保存图表
-    output_file = 'database_comparison_chart.png'
+    output_file = 'output/charts/database_comparison_chart.png'
     plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
     print(f"图表已保存为: {output_file}")
     
