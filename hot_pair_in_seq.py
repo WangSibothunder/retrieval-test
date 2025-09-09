@@ -18,8 +18,8 @@ INDEX_PATH = "hnsw_index.bin"
 parser = argparse.ArgumentParser(description="RAG热门文章分布分析")
 parser.add_argument("--dataset", type=str, default="mmlu", choices=["mmlu", "nq", "hotpotqa", "triviaqa"],
                     help="选择查询数据集: mmlu, nq, hotpotqa, triviaqa")
-parser.add_argument("--topk", type=int, default=1,
-                    help="检索的top-k值 (默认: 1)")
+parser.add_argument("--topk", type=int, default=10,
+                    help="检索的top-k值 (默认: 10)")
 args = parser.parse_args()
 
 dataset_name = args.dataset.lower()
@@ -39,7 +39,7 @@ doc_ids = list(range(len(documents)))  # 简单ID
 print("加载本地嵌入模型...")
 # 优先使用本地缓存模型
 local_model_paths = [
-    r"L:\huggingface\cache\hub\models--BAAI--bge-large-en-v1.5",  # HuggingFace cache路径
+    r"L:\huggingface\cache\hub",  # HuggingFace cache路径
     "./models/BAAI_bge-large-en-v1.5",  # 本地模型路径1
     "./BAAI_bge-large-en-v1.5",        # 本地模型路径2
     "models/BAAI_bge-large-en-v1.5",    # 本地模型路径3
@@ -115,42 +115,79 @@ queries = [item[query_key] for item in query_dataset]  # 提取查询
 
 # 步骤5: 对于每个查询，进行检索并统计（top-k，但统计频率基于所有检索结果）
 retrieved_docs = []
+retrieved_sequences = []  # 存储每个查询的top-10序列
 for query in queries:
     query_emb = get_embedding([query])[0]  # 单查询嵌入
     distances, indices = index.search(np.array([query_emb]), k=topk)  # 检索top-k
-    for idx in indices[0]:  # 对于top-k，每个检索到的文档都计入频率
+    seq = list(indices[0])  # top-10序列
+    retrieved_sequences.append(seq)
+    for idx in seq:  # 对于top-k，每个检索到的文档都计入频率
         retrieved_docs.append(idx)
 
 # 步骤6: 统计频率分布
-doc_freq = Counter(retrieved_docs)
-freq_sorted = sorted(doc_freq.values(), reverse=True)  # 降序频率
 
-# 打印并保存top-10热门文档频率
-print("Top-10热门文档频率:")
-with open(FREQ_STATS_PATH, "w") as f:
-    for rank, freq in enumerate(freq_sorted[:10], 1):
-        stat = f"Rank {rank}: {freq} 次"
-        print(stat)
-        f.write(stat + "\n")
 
-# 计算累积分布（验证热门现象）
-total_retrievals = len(retrieved_docs)  # 注意：现在是top-k的总检索次数
-cumulative = np.cumsum(freq_sorted) / total_retrievals
-top10_percent = cumulative[int(0.1 * len(freq_sorted)) - 1] * 100 if len(freq_sorted) > 0 else 0
-print(f"Top 10% 文档占总检索的 {top10_percent:.2f}%")
-with open(FREQ_STATS_PATH, "a") as f:
-    f.write(f"Top 10% 文档占总检索的 {top10_percent:.2f}%\n")
+# 新功能: 统计连续的2,3,4个文章对（n-gram）
+def extract_ngrams(sequences, n):
+    ngrams = []
+    for seq in sequences:
+        for i in range(len(seq) - n + 1):
+            ngram = tuple(seq[i:i+n])  # 有序tuple
+            ngrams.append(ngram)
+    return ngrams
 
-print(f"频率统计保存到 {FREQ_STATS_PATH}")
+for n in [2, 3, 4]:
+    ngrams = extract_ngrams(retrieved_sequences, n)
+    ngram_freq = Counter(ngrams)
+# Create a new, empty Counter object. And if given, count elements from an input iterable. Or, initialize the count from another mapping of elements to their counts.
 
-# 步骤7: 绘制频率分布图
-plt.figure(figsize=(10, 6))
-plt.plot(range(1, len(freq_sorted) + 1), freq_sorted, marker='o')
-plt.xscale('log')
-plt.yscale('log')
-plt.title(f"检索到的文章频率分布 (Log-Log Scale) - {dataset_name.upper()} Top-{topk}")
-plt.xlabel("文章排名 (由频率降序)")
-plt.ylabel("检索频率")
-plt.grid(True)
-plt.savefig(DIST_PLOT_PATH)
-print(f"频率分布图保存为 {DIST_PLOT_PATH}")
+# >>> c = Counter()                           # a new, empty counter
+# >>> c = Counter('gallahad')                 # a new counter from an iterable
+# >>> c = Counter({'a': 4, 'b': 2})           # a new counter from a mapping
+# >>> c = Counter(a=4, b=2)                   # a new counter from keyword args
+
+    ngram_freq_sorted = sorted(ngram_freq.values(), reverse=True)  # 降序频率
+    
+    # 输出文件命名
+    NGRAM_STATS_PATH = f"ngram_stats_n{n}_{dataset_name}_top{topk}.txt"
+    NGRAM_PLOT_PATH = f"ngram_distribution_n{n}_{dataset_name}_top{topk}.png"
+    
+    # 打印并保存top-10 n-gram频率
+    print(f"\n连续 {n} 个文章对 Top-10 频率:")
+    with open(NGRAM_STATS_PATH, "w") as f:
+        for rank, freq in enumerate(ngram_freq_sorted[:10], 1):
+            stat = f"Rank {rank}: {freq} 次"
+            print(stat)
+            f.write(stat + "\n")
+    
+    # 计算累积分布
+    total_ngrams = len(ngrams)  # 总n-gram次数
+    ngram_cumulative = np.cumsum(ngram_freq_sorted) / total_ngrams
+
+# # 假设有以下数据：
+# ngram_freq_sorted = [100, 80, 60, 40, 20, 10, 5, 3, 2, 1]  # 10个n-gram的频率
+# total_freq = sum(ngram_freq_sorted)  # 总频率 = 321
+# ngram_cumulative = [100/321, 180/321, 240/321, ...]  # 累积占比
+
+# # 计算前10% (即前1个) 的占比：
+# # int(0.1 * 10) - 1 = int(1.0) - 1 = 0
+# # ngram_cumulative[0] = 100/321 ≈ 0.311
+# # ngram_top10_percent = 0.311 * 100 = 31.1%
+
+    ngram_top10_percent = ngram_cumulative[int(0.1 * len(ngram_freq_sorted)) - 1] * 100 if len(ngram_freq_sorted) > 0 else 0
+    print(f"Top 10% {n}-gram 占总访问的 {ngram_top10_percent:.2f}%")
+    with open(NGRAM_STATS_PATH, "a") as f:
+        f.write(f"Top 10% {n}-gram 占总访问的 {ngram_top10_percent:.2f}%\n")
+    print(f"{n}-gram 统计保存到 {NGRAM_STATS_PATH}")
+    
+    # 绘制n-gram分布图
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(1, len(ngram_freq_sorted) + 1), ngram_freq_sorted, marker='o')
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.title(f"连续 {n} 个文章对频率分布 (Log-Log Scale) - {dataset_name.upper()} Top-{topk}")
+    plt.xlabel("对排名 (由频率降序)")
+    plt.ylabel("访问频率")
+    plt.grid(True)
+    plt.savefig(NGRAM_PLOT_PATH)
+    print(f"{n}-gram 分布图保存为 {NGRAM_PLOT_PATH}")

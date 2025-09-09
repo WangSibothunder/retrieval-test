@@ -37,7 +37,29 @@ doc_ids = list(range(len(documents)))  # 简单ID
 
 # 步骤2: 加载本地嵌入模型（使用BAAI/bge-large-en-v1.5，BERT家族针对RAG优化）
 print("加载本地嵌入模型...")
-model = SentenceTransformer('BAAI/bge-large-en-v1.5')  # 维度1024，基于BERT，专为RAG语义搜索设计
+# 优先使用本地缓存模型
+local_model_paths = [
+    r"L:\huggingface\cache\hub\models--BAAI--bge-large-en-v1.5",  # HuggingFace cache路径
+    "./models/BAAI_bge-large-en-v1.5",  # 本地模型路径1
+    "./BAAI_bge-large-en-v1.5",        # 本地模型路径2
+    "models/BAAI_bge-large-en-v1.5",    # 本地模型路径3
+    "BAAI_bge-large-en-v1.5"           # 本地模型路径4
+]
+
+model = None
+for local_path in local_model_paths:
+    if os.path.exists(local_path):
+        try:
+            print(f"使用本地缓存模型: {local_path}")
+            model = SentenceTransformer(local_path)
+            break
+        except Exception as e:
+            print(f"加载本地模型失败 {local_path}: {e}")
+            continue
+
+if model is None:
+    print("未找到本地缓存模型，从Hugging Face下载...")
+    model = SentenceTransformer('BAAI/bge-large-en-v1.5')  # 维度1024，基于BERT，专为RAG语义搜索设计
 
 # 生成或加载文档嵌入
 def get_embedding(texts, batch_size=100):

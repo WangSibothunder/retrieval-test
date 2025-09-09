@@ -4,7 +4,7 @@ venv/
 env/
 ENV/
 
-# 大型数据文件
+# 模型和索引文件
 *.npy
 *.bin
 *.pkl
@@ -17,6 +17,15 @@ ENV/
 *.jpeg
 *.pdf
 freq_stats_*.txt
+
+# 大型数据文件和模型缓存
+doc_embeddings.npy
+hnsw_index.bin
+rag-mini-wikipedia/
+
+# HuggingFace缓存
+.cache/
+hf_cache/
 
 # Python缓存
 __pycache__/
@@ -93,3 +102,15 @@ Thumbs.db
 
 # 日志文件
 *.log
+
+# 临时统计文件（保留在data/stats/目录中的除外）
+high_level_stats_*.txt
+ngram_stats_*.txt
+ordered_combo_stats_*.txt
+unordered_combo_stats_*.txt
+
+# 但保留示例数据和结果文件夹结构
+!data/
+!output/
+!data/stats/.gitkeep
+!output/charts/.gitkeep

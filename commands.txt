@@ -28,3 +28,14 @@ python hotpair.py --dataset hotpotqa --topk 10
 python hotpair.py --dataset triviaqa --topk 3
 python hotpair.py --dataset triviaqa --topk 5
 python hotpair.py --dataset triviaqa --topk 10
+=============================================
+commands.txtµÄÄÚÈÝ£º
+python hot_pair_in_seq.py --dataset mmlu --topk 10
+python hot_pair_in_seq.py --dataset nq --topk 10
+python hot_pair_in_seq.py --dataset hotpotqa --topk 10
+python hot_pair_in_seq.py --dataset triviaqa --topk 10
+===================================================
+python hotpaper_HNSWnode.py --dataset mmlu --topk 10
+python hotpaper_HNSWnode.py --dataset nq --topk 10
+python hotpaper_HNSWnode.py --dataset hotpotqa --topk 10
+python hotpaper_HNSWnode.py --dataset triviaqa --topk 10
