@@ -1,0 +1,11 @@
+Rank 1: 23 次
+Rank 2: 17 次
+Rank 3: 16 次
+Rank 4: 16 次
+Rank 5: 15 次
+Rank 6: 14 次
+Rank 7: 13 次
+Rank 8: 13 次
+Rank 9: 13 次
+Rank 10: 13 次
+Top 10% 2-gram 占总访问的 16.54%

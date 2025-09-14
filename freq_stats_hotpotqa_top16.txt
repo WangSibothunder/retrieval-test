@@ -1,0 +1,11 @@
+Rank 1: Doc 84145 - 103 次
+Rank 2: Doc 38854 - 92 次
+Rank 3: Doc 29995 - 89 次
+Rank 4: Doc 91472 - 85 次
+Rank 5: Doc 7524 - 85 次
+Rank 6: Doc 30330 - 84 次
+Rank 7: Doc 37689 - 83 次
+Rank 8: Doc 33607 - 81 次
+Rank 9: Doc 4012 - 80 次
+Rank 10: Doc 12958 - 80 次
+Top 10% 文档占总检索的 47.68%

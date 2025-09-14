@@ -7,10 +7,12 @@
 
 import os
 import re
+import glob
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
 import argparse
+from matplotlib.patches import Rectangle
 
 # 配置matplotlib中文字体支持
 plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
@@ -140,48 +142,53 @@ def collect_hnsw_level_counts(datasets, topks):
     return data
 
 def create_frequency_comparison_chart(data, output_suffix=""):
-    """创建文档频率分布对比图表"""
+    """创建文档频率分布对比图表 - 数据集+Top-K组合展示"""
     if not data:
         print("没有找到频率分布数据")
         return
     
-    datasets = list(data.keys())
-    configs = list(next(iter(data.values())).keys()) if data else []
+    # 构建数据集+Top-K组合
+    combinations = []
+    values = []
+    dataset_colors = {'mmlu': '#FF6B6B', 'nq': '#4ECDC4', 'hotpotqa': '#45B7D1', 'triviaqa': '#96CEB4'}
+    colors = []
     
-    if not datasets or not configs:
+    for dataset in sorted(data.keys()):
+        for config in sorted(data[dataset].keys()):
+            if data[dataset][config] > 0:
+                combinations.append(f"{dataset.upper()}\n{config.upper()}")
+                values.append(data[dataset][config])
+                colors.append(dataset_colors.get(dataset, '#808080'))
+    
+    if not combinations:
         print("数据为空，无法创建图表")
         return
     
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(max(12, len(combinations) * 1.5), 8))
     
-    x = np.arange(len(datasets))
-    width = 0.25 if len(configs) <= 3 else 0.8 / len(configs)
-    colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']
+    x = np.arange(len(combinations))
+    bars = ax.bar(x, values, color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
     
-    for i, config in enumerate(configs):
-        values = [data[dataset].get(config, 0) for dataset in datasets]
-        bars = ax.bar(x + i * width, values, width, 
-                     label=config.upper(), color=colors[i % len(colors)], alpha=0.8)
-        
-        # 在柱子上添加数值标签
-        for bar, value in zip(bars, values):
-            if value > 0:
-                height = bar.get_height()
-                ax.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                       f'{value:.1f}%', ha='center', va='bottom', fontsize=9)
+    # 在柱子上添加数值标签
+    for bar, value in zip(bars, values):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + max(values) * 0.01,
+               f'{value:.1f}%', ha='center', va='bottom', fontsize=9, fontweight='bold')
     
-    ax.set_xlabel('数据集', fontsize=12, fontweight='bold')
+    ax.set_xlabel('数据集 + Top-K配置', fontsize=12, fontweight='bold')
     ax.set_ylabel('Top 10% 文档占总检索的百分比 (%)', fontsize=12, fontweight='bold')
-    ax.set_title('不同数据集文档频率分布对比 - 热门文档集中度分析', fontsize=14, fontweight='bold')
-    ax.set_xticks(x + width * (len(configs) - 1) / 2)
-    ax.set_xticklabels([dataset.upper() for dataset in datasets])
-    ax.legend()
-    ax.grid(True, alpha=0.3)
+    ax.set_title('不同数据集和Top-K配置的文档频率分布对比', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(combinations, rotation=45, ha='right')
     
-    # 设置y轴范围
-    max_val = max([max(data[dataset].values()) for dataset in datasets if data[dataset]]) if data else 0
-    if max_val > 0:
-        ax.set_ylim(0, max_val * 1.1)
+    # 添加图例说明不同颜色代表的数据集
+    unique_datasets = sorted(set(data.keys()))
+    legend_elements = [Rectangle((0,0),1,1, facecolor=dataset_colors.get(ds, '#808080'), 
+                                    alpha=0.8, label=ds.upper()) for ds in unique_datasets]
+    ax.legend(handles=legend_elements, title='数据集', loc='upper right')
+    
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim(0, max(values) * 1.15 if values else 1)
     
     plt.tight_layout()
     filename = f'output/charts/wikipead_frequency_distribution{output_suffix}.png'
@@ -190,7 +197,7 @@ def create_frequency_comparison_chart(data, output_suffix=""):
     print(f"文档频率分布图已保存到 {filename}")
 
 def create_ngram_comparison_chart(data, output_suffix=""):
-    """创建N-gram分布对比图表"""
+    """创建N-gram分布对比图表 - 数据集+Top-K组合展示"""
     if not data:
         print("没有找到N-gram分布数据")
         return
@@ -208,45 +215,56 @@ def create_ngram_comparison_chart(data, output_suffix=""):
         print("N-gram数据为空，无法创建图表")
         return
     
-    fig, axes = plt.subplots(1, len(ngram_sizes), figsize=(5 * len(ngram_sizes), 6))
+    # 构建数据集+Top-K组合
+    combinations = []
+    for dataset in sorted(datasets):
+        for config in sorted(configs):
+            combinations.append(f"{dataset.upper()}\n{config.upper()}")
+    
+    fig, axes = plt.subplots(1, len(ngram_sizes), figsize=(max(6, len(combinations) * 0.8) * len(ngram_sizes), 6))
     if len(ngram_sizes) == 1:
         axes = [axes]
     
-    colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']
+    dataset_colors = {'mmlu': '#FF6B6B', 'nq': '#4ECDC4', 'hotpotqa': '#45B7D1', 'triviaqa': '#96CEB4'}
     
     for idx, n in enumerate(ngram_sizes):
         ax = axes[idx]
-        x = np.arange(len(datasets))
-        width = 0.25 if len(configs) <= 3 else 0.8 / len(configs)
         
-        for i, config in enumerate(configs):
-            values = [data[n][dataset].get(config, 0) for dataset in datasets]
-            bars = ax.bar(x + i * width, values, width, 
-                         label=config.upper(), color=colors[i % len(colors)], alpha=0.8)
-            
-            # 在柱子上添加数值标签
-            for bar, value in zip(bars, values):
-                if value > 0:
-                    height = bar.get_height()
-                    ax.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                           f'{value:.1f}%', ha='center', va='bottom', fontsize=8)
+        # 构建当前n-gram的数据
+        values = []
+        colors = []
+        for dataset in sorted(datasets):
+            for config in sorted(configs):
+                value = data[n][dataset].get(config, 0)
+                values.append(value)
+                colors.append(dataset_colors.get(dataset, '#808080'))
         
-        ax.set_xlabel('数据集')
+        x = np.arange(len(combinations))
+        bars = ax.bar(x, values, color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
+        
+        # 在柱子上添加数值标签
+        for bar, value in zip(bars, values):
+            if value > 0:
+                height = bar.get_height()
+                ax.text(bar.get_x() + bar.get_width()/2., height + max(values) * 0.01,
+                       f'{value:.1f}%', ha='center', va='bottom', fontsize=8)
+        
+        ax.set_xlabel('数据集 + Top-K配置')
         ax.set_ylabel(f'Top 10% {n}-gram 占总访问的百分比 (%)')
         ax.set_title(f'{n}-gram 序列分布对比')
-        ax.set_xticks(x + width * (len(configs) - 1) / 2)
-        ax.set_xticklabels([dataset.upper() for dataset in datasets])
-        if idx == 0:
-            ax.legend()
-        ax.grid(True, alpha=0.3)
+        ax.set_xticks(x)
+        ax.set_xticklabels(combinations, rotation=45, ha='right')
         
-        # 设置y轴范围
-        max_val = 0
-        for dataset in datasets:
-            if dataset in data[n] and data[n][dataset]:
-                max_val = max(max_val, max(data[n][dataset].values()))
-        if max_val > 0:
-            ax.set_ylim(0, max_val * 1.1)
+        # 只在第一个子图添加图例
+        if idx == 0:
+            unique_datasets = sorted(set(datasets))
+            legend_elements = [Rectangle((0,0),1,1, facecolor=dataset_colors.get(ds, '#808080'), 
+                                            alpha=0.8, label=ds.upper()) for ds in unique_datasets]
+            ax.legend(handles=legend_elements, title='数据集', loc='upper right')
+        
+        ax.grid(True, alpha=0.3)
+        if values:
+            ax.set_ylim(0, max(values) * 1.15)
     
     plt.tight_layout()
     filename = f'output/charts/wikipead_ngram_distribution{output_suffix}.png'
@@ -255,48 +273,53 @@ def create_ngram_comparison_chart(data, output_suffix=""):
     print(f"N-gram分布图已保存到 {filename}")
 
 def create_high_level_comparison_chart(data, output_suffix=""):
-    """创建HNSW高层节点分布对比图表"""
+    """创建HNSW高层节点分布对比图表 - 数据集+Top-K组合展示"""
     if not data:
         print("没有找到高层节点分布数据")
         return
     
-    datasets = list(data.keys())
-    configs = list(next(iter(data.values())).keys()) if data else []
+    # 构建数据集+Top-K组合
+    combinations = []
+    values = []
+    dataset_colors = {'mmlu': '#FF6B6B', 'nq': '#4ECDC4', 'hotpotqa': '#45B7D1', 'triviaqa': '#96CEB4'}
+    colors = []
     
-    if not datasets or not configs:
+    for dataset in sorted(data.keys()):
+        for config in sorted(data[dataset].keys()):
+            if data[dataset][config] > 0:
+                combinations.append(f"{dataset.upper()}\n{config.upper()}")
+                values.append(data[dataset][config])
+                colors.append(dataset_colors.get(dataset, '#808080'))
+    
+    if not combinations:
         print("高层节点数据为空，无法创建图表")
         return
     
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(max(12, len(combinations) * 1.5), 8))
     
-    x = np.arange(len(datasets))
-    width = 0.25 if len(configs) <= 3 else 0.8 / len(configs)
-    colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']
+    x = np.arange(len(combinations))
+    bars = ax.bar(x, values, color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
     
-    for i, config in enumerate(configs):
-        values = [data[dataset].get(config, 0) for dataset in datasets]
-        bars = ax.bar(x + i * width, values, width, 
-                     label=config.upper(), color=colors[i % len(colors)], alpha=0.8)
-        
-        # 在柱子上添加数值标签
-        for bar, value in zip(bars, values):
-            if value > 0:
-                height = bar.get_height()
-                ax.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                       f'{value:.1f}%', ha='center', va='bottom', fontsize=9)
+    # 在柱子上添加数值标签
+    for bar, value in zip(bars, values):
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2., height + max(values) * 0.01,
+               f'{value:.1f}%', ha='center', va='bottom', fontsize=9, fontweight='bold')
     
-    ax.set_xlabel('数据集', fontsize=12, fontweight='bold')
+    ax.set_xlabel('数据集 + Top-K配置', fontsize=12, fontweight='bold')
     ax.set_ylabel('Top 10% 热门文档中高层节点占比 (%)', fontsize=12, fontweight='bold')
-    ax.set_title('不同数据集HNSW高层节点分布对比 - 热门文档在索引层级中的分布', fontsize=14, fontweight='bold')
-    ax.set_xticks(x + width * (len(configs) - 1) / 2)
-    ax.set_xticklabels([dataset.upper() for dataset in datasets])
-    ax.legend()
-    ax.grid(True, alpha=0.3)
+    ax.set_title('不同数据集和Top-K配置的HNSW高层节点分布对比', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(combinations, rotation=45, ha='right')
     
-    # 设置y轴范围
-    max_val = max([max(data[dataset].values()) for dataset in datasets if data[dataset]]) if data else 0
-    if max_val > 0:
-        ax.set_ylim(0, max_val * 1.1)
+    # 添加图例说明不同颜色代表的数据集
+    unique_datasets = sorted(set(data.keys()))
+    legend_elements = [Rectangle((0,0),1,1, facecolor=dataset_colors.get(ds, '#808080'), 
+                                    alpha=0.8, label=ds.upper()) for ds in unique_datasets]
+    ax.legend(handles=legend_elements, title='数据集', loc='upper right')
+    
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim(0, max(values) * 1.15 if values else 1)
     
     plt.tight_layout()
     filename = f'output/charts/wikipead_high_level_distribution{output_suffix}.png'
@@ -305,7 +328,7 @@ def create_high_level_comparison_chart(data, output_suffix=""):
     print(f"HNSW高层节点分布图已保存到 {filename}")
 
 def create_level_distribution_chart(data, output_suffix=""):
-    """创建层级分布详细图表"""
+    """创建层级分布详细图表 - 数据集+Top-K组合展示"""
     if not data:
         print("没有找到层级分布数据")
         return
@@ -325,46 +348,42 @@ def create_level_distribution_chart(data, output_suffix=""):
                 all_levels.update(data[dataset][config].keys())
     all_levels = sorted(all_levels)
     
-    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-    axes = axes.flatten()
+    # 构建数据集+Top-K组合
+    combinations = []
+    for dataset in sorted(datasets):
+        for config in sorted(configs):
+            combinations.append(f"{dataset.upper()}\n{config.upper()}")
+    
+    fig, ax = plt.subplots(figsize=(max(16, len(combinations) * 1.2), 10))
     
     colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD']
+    x = np.arange(len(combinations))
+    width = 0.8 / len(all_levels) if all_levels else 0.8
     
-    for idx, dataset in enumerate(datasets):
-        if idx >= len(axes):
-            break
-        
-        ax = axes[idx]
-        x = np.arange(len(configs))
-        width = 0.8 / len(all_levels) if all_levels else 0.8
-        
-        for level_idx, level in enumerate(all_levels):
-            values = []
-            for config in configs:
+    for level_idx, level in enumerate(all_levels):
+        values = []
+        for dataset in sorted(datasets):
+            for config in sorted(configs):
                 level_data = data[dataset].get(config, {})
                 values.append(level_data.get(level, 0))
-            
-            bars = ax.bar(x + level_idx * width, values, width, 
-                         label=f'Level {level}', color=colors[level_idx % len(colors)], alpha=0.8)
-            
-            # 在柱子上添加数值标签
-            for bar, value in zip(bars, values):
-                if value > 0:
-                    height = bar.get_height()
-                    ax.text(bar.get_x() + bar.get_width()/2., height + 0.1,
-                           f'{value}', ha='center', va='bottom', fontsize=8)
         
-        ax.set_xlabel('Top-K配置')
-        ax.set_ylabel('热门文档数量')
-        ax.set_title(f'{dataset.upper()} - Top-10热门文档层级分布')
-        ax.set_xticks(x + width * (len(all_levels) - 1) / 2)
-        ax.set_xticklabels([config.upper() for config in configs])
-        ax.legend()
-        ax.grid(True, alpha=0.3)
+        bars = ax.bar(x + level_idx * width, values, width, 
+                     label=f'Level {level}', color=colors[level_idx % len(colors)], alpha=0.8)
+        
+        # 在柱子上添加数值标签
+        for bar, value in zip(bars, values):
+            if value > 0:
+                height = bar.get_height()
+                ax.text(bar.get_x() + bar.get_width()/2., height + 0.1,
+                       f'{value}', ha='center', va='bottom', fontsize=8)
     
-    # 隐藏多余的子图
-    for idx in range(len(datasets), len(axes)):
-        axes[idx].set_visible(False)
+    ax.set_xlabel('数据集 + Top-K配置', fontsize=12, fontweight='bold')
+    ax.set_ylabel('热门文档数量', fontsize=12, fontweight='bold')
+    ax.set_title('Top-10热门文档HNSW层级分布详情 - 数据集和Top-K配置对比', fontsize=14, fontweight='bold')
+    ax.set_xticks(x + width * (len(all_levels) - 1) / 2)
+    ax.set_xticklabels(combinations, rotation=45, ha='right')
+    ax.legend(title='HNSW层级', loc='upper right')
+    ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
     filename = f'output/charts/wikipead_level_distribution_detail{output_suffix}.png'
@@ -373,62 +392,80 @@ def create_level_distribution_chart(data, output_suffix=""):
     print(f"详细层级分布图已保存到 {filename}")
 
 def create_comprehensive_dashboard(freq_data, ngram_data, high_level_data, output_suffix=""):
-    """创建综合对比仪表板"""
+    """创建综合对比仪表板 - 数据集+Top-K组合展示"""
     fig = plt.figure(figsize=(20, 15))
     
     # 获取通用配置
     datasets = list(freq_data.keys()) if freq_data else []
     configs = list(next(iter(freq_data.values())).keys()) if freq_data and datasets else []
-    colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']
+    dataset_colors = {'mmlu': '#FF6B6B', 'nq': '#4ECDC4', 'hotpotqa': '#45B7D1', 'triviaqa': '#96CEB4'}
+    
+    # 构建数据集+Top-K组合
+    combinations = []
+    for dataset in sorted(datasets):
+        for config in sorted(configs):
+            combinations.append(f"{dataset.upper()}\n{config.upper()}")
     
     # 1. 文档频率分布 (左上)
     if freq_data and datasets and configs:
         ax1 = plt.subplot(2, 3, (1, 2))
-        x = np.arange(len(datasets))
-        width = 0.25 if len(configs) <= 3 else 0.8 / len(configs)
         
-        for i, config in enumerate(configs):
-            values = [freq_data[dataset].get(config, 0) for dataset in datasets]
-            bars = ax1.bar(x + i * width, values, width, 
-                          label=config.upper(), color=colors[i % len(colors)], alpha=0.8)
-            
-            for bar, value in zip(bars, values):
-                if value > 0:
-                    height = bar.get_height()
-                    ax1.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                            f'{value:.1f}%', ha='center', va='bottom', fontsize=8)
+        values = []
+        colors = []
+        for dataset in sorted(datasets):
+            for config in sorted(configs):
+                value = freq_data[dataset].get(config, 0)
+                values.append(value)
+                colors.append(dataset_colors.get(dataset, '#808080'))
         
-        ax1.set_xlabel('数据集')
+        x = np.arange(len(combinations))
+        bars = ax1.bar(x, values, color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
+        
+        for bar, value in zip(bars, values):
+            if value > 0:
+                height = bar.get_height()
+                ax1.text(bar.get_x() + bar.get_width()/2., height + max(values) * 0.01,
+                        f'{value:.1f}%', ha='center', va='bottom', fontsize=8)
+        
+        ax1.set_xlabel('数据集 + Top-K配置')
         ax1.set_ylabel('Top 10% 文档占总检索的百分比 (%)')
         ax1.set_title('文档频率分布对比', fontsize=12, fontweight='bold')
-        ax1.set_xticks(x + width * (len(configs) - 1) / 2)
-        ax1.set_xticklabels([dataset.upper() for dataset in datasets])
-        ax1.legend()
+        ax1.set_xticks(x)
+        ax1.set_xticklabels(combinations, rotation=45, ha='right')
+        
+        # 添加图例
+        unique_datasets = sorted(set(datasets))
+        legend_elements = [Rectangle((0,0),1,1, facecolor=dataset_colors.get(ds, '#808080'), 
+                                    alpha=0.8, label=ds.upper()) for ds in unique_datasets]
+        ax1.legend(handles=legend_elements, title='数据集', loc='upper right')
         ax1.grid(True, alpha=0.3)
     
     # 2. 高层节点分布 (右上)
     if high_level_data and datasets and configs:
         ax2 = plt.subplot(2, 3, 3)
-        x = np.arange(len(datasets))
-        width = 0.25 if len(configs) <= 3 else 0.8 / len(configs)
         
-        for i, config in enumerate(configs):
-            values = [high_level_data[dataset].get(config, 0) for dataset in datasets]
-            bars = ax2.bar(x + i * width, values, width, 
-                          label=config.upper(), color=colors[i % len(colors)], alpha=0.8)
-            
-            for bar, value in zip(bars, values):
-                if value > 0:
-                    height = bar.get_height()
-                    ax2.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                            f'{value:.1f}%', ha='center', va='bottom', fontsize=8)
+        values = []
+        colors = []
+        for dataset in sorted(datasets):
+            for config in sorted(configs):
+                value = high_level_data[dataset].get(config, 0)
+                values.append(value)
+                colors.append(dataset_colors.get(dataset, '#808080'))
         
-        ax2.set_xlabel('数据集')
+        x = np.arange(len(combinations))
+        bars = ax2.bar(x, values, color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
+        
+        for bar, value in zip(bars, values):
+            if value > 0:
+                height = bar.get_height()
+                ax2.text(bar.get_x() + bar.get_width()/2., height + max(values) * 0.01,
+                        f'{value:.1f}%', ha='center', va='bottom', fontsize=8)
+        
+        ax2.set_xlabel('数据集 + Top-K配置')
         ax2.set_ylabel('高层节点占比 (%)')
         ax2.set_title('HNSW高层节点分布', fontsize=12, fontweight='bold')
-        ax2.set_xticks(x + width * (len(configs) - 1) / 2)
-        ax2.set_xticklabels([dataset.upper() for dataset in datasets])
-        ax2.legend()
+        ax2.set_xticks(x)
+        ax2.set_xticklabels(combinations, rotation=45, ha='right')
         ax2.grid(True, alpha=0.3)
     
     # 3. N-gram分布 (下方)
@@ -436,27 +473,29 @@ def create_comprehensive_dashboard(freq_data, ngram_data, high_level_data, outpu
         ngram_sizes = sorted(ngram_data.keys())
         for idx, n in enumerate(ngram_sizes[:3]):  # 最多显示3个n-gram
             ax = plt.subplot(2, 3, 4 + idx)
-            x = np.arange(len(datasets))
-            width = 0.25 if len(configs) <= 3 else 0.8 / len(configs)
             
-            for i, config in enumerate(configs):
-                values = [ngram_data[n][dataset].get(config, 0) for dataset in datasets]
-                bars = ax.bar(x + i * width, values, width, 
-                             label=config.upper(), color=colors[i % len(colors)], alpha=0.8)
-                
-                for bar, value in zip(bars, values):
-                    if value > 0:
-                        height = bar.get_height()
-                        ax.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                               f'{value:.1f}%', ha='center', va='bottom', fontsize=7)
+            values = []
+            colors = []
+            for dataset in sorted(datasets):
+                for config in sorted(configs):
+                    value = ngram_data[n][dataset].get(config, 0)
+                    values.append(value)
+                    colors.append(dataset_colors.get(dataset, '#808080'))
             
-            ax.set_xlabel('数据集')
+            x = np.arange(len(combinations))
+            bars = ax.bar(x, values, color=colors, alpha=0.8, edgecolor='black', linewidth=0.5)
+            
+            for bar, value in zip(bars, values):
+                if value > 0:
+                    height = bar.get_height()
+                    ax.text(bar.get_x() + bar.get_width()/2., height + max(values) * 0.01,
+                           f'{value:.1f}%', ha='center', va='bottom', fontsize=7)
+            
+            ax.set_xlabel('数据集 + Top-K配置')
             ax.set_ylabel(f'{n}-gram 占比 (%)')
             ax.set_title(f'{n}-gram 分布', fontsize=12, fontweight='bold')
-            ax.set_xticks(x + width * (len(configs) - 1) / 2)
-            ax.set_xticklabels([dataset.upper() for dataset in datasets])
-            if idx == 0:
-                ax.legend()
+            ax.set_xticks(x)
+            ax.set_xticklabels(combinations, rotation=45, ha='right')
             ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
@@ -467,7 +506,9 @@ def create_comprehensive_dashboard(freq_data, ngram_data, high_level_data, outpu
 
 def main():
     """主函数"""
+    print("开始执行 draw_wikipead_all_chart.py...")
     args = parse_arguments()
+    print(f"命令行参数: dataset={args.dataset}, topk={args.topk}")
     
     # 确定要处理的数据集和top-k配置
     if args.dataset == "all":
@@ -478,11 +519,17 @@ def main():
     if args.topk == "all":
         # 自动检测可用的top-k配置
         topks = []
-        for k in [1, 5, 10]:
-            # 检查是否存在对应的文件
-            test_file = f"freq_stats_{datasets[0]}_top{k}.txt"
-            if os.path.exists(test_file):
-                topks.append(k)
+        import glob
+        # 检查freq_stats文件来确定可用的topk值
+        freq_files = glob.glob("freq_stats_*_top*.txt")
+        topk_set = set()
+        for file in freq_files:
+            # 从文件名中提取topk值，如freq_stats_mmlu_top10.txt -> 10
+            match = re.search(r'_top(\d+)\.txt$', file)
+            if match:
+                topk_set.add(int(match.group(1)))
+        topks = sorted(list(topk_set))
+        print(f"检测到的Top-K配置: {topks}")
         if not topks:
             topks = [10]  # 默认值
     else:

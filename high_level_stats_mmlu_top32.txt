@@ -1,0 +1,12 @@
+Rank 1: Doc 10356 (Freq 136) - 高层节点: True (层级 1)
+Rank 2: Doc 22266 (Freq 132) - 高层节点: True (层级 1)
+Rank 3: Doc 4293 (Freq 124) - 高层节点: True (层级 1)
+Rank 4: Doc 4280 (Freq 120) - 高层节点: True (层级 1)
+Rank 5: Doc 34558 (Freq 101) - 高层节点: True (层级 1)
+Rank 6: Doc 21011 (Freq 99) - 高层节点: True (层级 1)
+Rank 7: Doc 2587 (Freq 98) - 高层节点: True (层级 1)
+Rank 8: Doc 85036 (Freq 96) - 高层节点: True (层级 1)
+Rank 9: Doc 26597 (Freq 96) - 高层节点: True (层级 1)
+Rank 10: Doc 46652 (Freq 95) - 高层节点: True (层级 1)
+
+Top 10% 热门文章中高层节点占比: 100.00%
