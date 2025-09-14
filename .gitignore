@@ -1,75 +1,24 @@
-# 大型数据文件
-*.npy
-*.bin
-wikipedia_data/
-dataset_cache/
+# 蹇界暐鏍圭洰褰曚腑鐨凱NG鍜孴XT缁熻鏂囦欢
+/*.png
+/*.txt
+!requirements.txt
+!commands.txt
 
-# Python相关
+# 蹇界暐涓存椂鏂囦欢
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
+*.pyc
+*.pyo
+*.pyd
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
+*.so
 .pytest_cache/
 
-# Virtual environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# IDE相关
+# 蹇界暐IDE鏂囦欢
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
-# 操作系统相关
+# 蹇界暐绯荤粺鏂囦欢
 .DS_Store
 Thumbs.db
-
-# 日志文件
-*.log
-
-# 临时文件
-*.tmp
-*.temp
