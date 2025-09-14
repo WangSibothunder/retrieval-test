@@ -39,3 +39,22 @@ python hotpaper_HNSWnode.py --dataset mmlu --topk 10
 python hotpaper_HNSWnode.py --dataset nq --topk 10
 python hotpaper_HNSWnode.py --dataset hotpotqa --topk 10
 python hotpaper_HNSWnode.py --dataset triviaqa --topk 10
+============================================
+
+commands.txtµÄÄÚÈÝ£º
+python download_datasets.py
+python download_datasets.py
+python download_datasets.py
+python download_datasets.py
+python wikipead_all.py --dataset mmlu --topk 10
+python wikipead_all.py --dataset mmlu --topk 16
+python wikipead_all.py --dataset mmlu --topk 32
+python wikipead_all.py --dataset nq --topk 10
+python wikipead_all.py --dataset nq --topk 16
+python wikipead_all.py --dataset nq --topk 32
+python wikipead_all.py --dataset hotpotqa --topk 10
+python wikipead_all.py --dataset hotpotqa --topk 16
+python wikipead_all.py --dataset hotpotqa --topk 32
+python wikipead_all.py --dataset triviaqa --topk 10
+python wikipead_all.py --dataset triviaqa --topk 16
+python wikipead_all.py --dataset triviaqa --topk 32

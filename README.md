@@ -1,187 +1,161 @@
-# hotpaper-text
+# RAGæ–‡æ¡£çƒ­åº¦åˆ†æžå·¥å…· - å‡çº§ç‰ˆ
 
-Ò»¸ö»ùÓÚRAG£¨¼ìË÷ÔöÇ¿Éú³É£©µÄÎÄµµÈÈ¶È·Ö²¼·ÖÎö¹¤¾ß£¬ÓÃÓÚ·ÖÎö²»Í¬²éÑ¯Êý¾Ý¼¯ÏÂÎÄµµ¼ìË÷µÄÆµÂÊ·Ö²¼Ä£Ê½¡£
+è¿™ä¸ªé¡¹ç›®å®žçŽ°äº†ä¸€ä¸ªåŸºäºŽRAGï¼ˆRetrieval-Augmented Generationï¼‰ç³»ç»Ÿçš„åˆ†æžå·¥å…·ï¼Œç”¨äºŽç ”ç©¶åœ¨ä¸åŒæŸ¥è¯¢æ•°æ®é›†ä¸‹Wikipediaæ–‡æ¡£çš„çƒ­åº¦åˆ†å¸ƒæƒ…å†µï¼ŒçŽ°åœ¨åŒ…å«äº†æ›´å…¨é¢çš„åˆ†æžåŠŸèƒ½å’Œå¯è§†åŒ–å·¥å…·ã€‚
 
-## ? ÏîÄ¿¼ò½é
+## ? æ–°åŠŸèƒ½ç‰¹æ€§
 
-±¾ÏîÄ¿ÊµÏÖÁËÒ»¸öÍêÕûµÄRAGÏµÍ³·ÖÎö¹¤¾ß£¬ÓÃÓÚÑÐ¾¿ÔÚ²»Í¬²éÑ¯Êý¾Ý¼¯ÉÏ¼ìË÷WikipediaÎÄµµÊ±µÄÈÈ¶È·Ö²¼¹æÂÉ¡£Ê¹ÓÃÏÈ½øµÄBAAI/bge-large-en-v1.5Ç¶ÈëÄ£ÐÍºÍFAISS HNSWË÷Òý¼¼Êõ½øÐÐ¸ßÐ§µÄÓïÒå¼ìË÷ÓëÍ³¼Æ·ÖÎö¡£
+### 1. å¤šç»´åº¦åˆ†æž
+- **æ–‡æ¡£é¢‘çŽ‡åˆ†æž**: åˆ†æžçƒ­é—¨æ–‡æ¡£çš„åˆ†å¸ƒæ¨¡å¼
+- **N-gramåºåˆ—åˆ†æž**: åˆ†æž2-gramã€3-gramã€4-gramçš„æ£€ç´¢æ¨¡å¼
+- **HNSWå±‚çº§åˆ†æž**: åˆ†æžçƒ­é—¨æ–‡æ¡£åœ¨HNSWç´¢å¼•ä¸­çš„å±‚çº§åˆ†å¸ƒ
 
-## ? ºËÐÄ¹¦ÄÜ
+### 2. ä¸°å¯Œçš„å¯è§†åŒ–å·¥å…·
+- **ç»¼åˆå¯¹æ¯”å›¾è¡¨**: è·¨æ•°æ®é›†çš„å¤šç»´åº¦å¯¹æ¯”åˆ†æž
+- **å•æ•°æ®é›†è¯¦ç»†ä»ªè¡¨æ¿**: æ·±å…¥åˆ†æžå•ä¸ªæ•°æ®é›†çš„å„é¡¹æŒ‡æ ‡
+- **Log-Logåˆ†å¸ƒå›¾**: æ­ç¤ºé•¿å°¾åˆ†å¸ƒç‰¹å¾
 
-- ? **¶àÊý¾Ý¼¯Ö§³Ö**: Ö§³ÖMMLU¡¢Natural Questions¡¢HotpotQA¡¢TriviaQAµÈÖ÷Á÷ÎÊ´ðÊý¾Ý¼¯
-- ? **ÆµÂÊ·ÖÎö**: Í³¼ÆÎÄµµ¼ìË÷ÆµÂÊ·Ö²¼£¬Ê¶±ð"³¤Î²·Ö²¼"Ä£Ê½
-- ? **Áé»îµÄTop-K**: Ö§³Ö²»Í¬µÄ¼ìË÷ÊýÁ¿ÅäÖÃ
-- ? **¿ÉÊÓ»¯**: Éú³ÉLog-Log³ß¶ÈµÄÆµÂÊ·Ö²¼Í¼±í
-- ? **¸ßÐ§¼ìË÷**: Ê¹ÓÃFAISS HNSWË÷ÒýÊµÏÖ¿ìËÙÓïÒåÏàËÆ¶ÈËÑË÷
-- ? **×éºÏ·ÖÎö**: ·ÖÎöÎÄµµ×éºÏµÄÓÐÐòºÍÎÞÐò¼ìË÷Ä£Ê½
-- ? **¿çÊý¾Ý¼¯¶Ô±È**: Ö§³Ö¶àÊý¾Ý¼¯½á¹û¶Ô±È·ÖÎö
+### 3. æ”¹è¿›çš„æ–‡ä»¶ç»“æž„
+```
+â”œâ”€â”€ data/stats/          # æ‰€æœ‰ç»Ÿè®¡æ–‡ä»¶
+â”œâ”€â”€ output/charts/       # æ‰€æœ‰å›¾è¡¨æ–‡ä»¶
+â”œâ”€â”€ wikipedia_data/      # Wikipediaæ•°æ®ç¼“å­˜
+â””â”€â”€ dataset_cache/       # æŸ¥è¯¢æ•°æ®é›†ç¼“å­˜
+```
 
-## ?? ¼¼ÊõÕ»
+## ? å¿«é€Ÿå¼€å§‹
 
-| ×é¼þ | ¼¼Êõ | ËµÃ÷ |
-|:---|:---|:---|
-| **Ç¶ÈëÄ£ÐÍ** | BAAI/bge-large-en-v1.5 | 1024Î¬£¬×¨ÎªRAGÓÅ»¯µÄÎÄ±¾Ç¶ÈëÄ£ÐÍ |
-| **ÏòÁ¿Êý¾Ý¿â** | FAISS HNSW | ¸ßÐ§µÄ½üËÆ×î½üÁÚËÑË÷Ë÷Òý |
-| **ÖªÊ¶¿â** | rag-mini-wikipedia | WikipediaµÄ×Ó¼¯Êý¾Ý |
-| **¿ÉÊÓ»¯** | Matplotlib | Éú³ÉLog-Log³ß¶ÈµÄÆµÂÊ·Ö²¼Í¼ |
-| **Êý¾Ý´¦Àí** | Pandas, NumPy | Êý¾Ý¼¯´¦ÀíºÍÊýÖµ¼ÆËã |
-| **Êý¾Ý¼¯¼ÓÔØ** | datasets | HuggingFace datasets¿â |
-
-## ? °²×°ÓëÊ¹ÓÃ
-
-### »·¾³ÒªÇó
-
-- Python 3.7+
-- ÍÆ¼öÄÚ´æ 8GB+
-- NumPy 1.x°æ±¾£¨¼æÈÝFAISS£©
-
-### ÒÀÀµ°²×°
-
+### 1. çŽ¯å¢ƒé…ç½®
 ```bash
 pip install -r requirements.txt
 ```
 
-### ºËÐÄ½Å±¾Ê¹ÓÃ
-
-#### 1. ÎÄµµÆµÂÊ·ÖÎö (`hot.py`)
-
-·ÖÎöµ¥¸öÎÄµµÔÚ¼ìË÷ÖÐµÄÈÈ¶È·Ö²¼£º
-
+### 2. è¿è¡Œç¤ºä¾‹
 ```bash
-# »ù±¾ÓÃ·¨
-python hot.py --dataset [mmlu|nq|hotpotqa|triviaqa] --topk [K]
-
-# Ê¾ÀýÃüÁî
-python hot.py --dataset mmlu --topk 1       # MMLUÊý¾Ý¼¯£¬Top-1ÎÄµµ
-python hot.py --dataset nq --topk 5         # Natural Questions£¬Top-5ÎÄµµ
-python hot.py --dataset hotpotqa --topk 10  # HotpotQA£¬Top-10ÎÄµµ
-python hot.py --dataset triviaqa --topk 1   # TriviaQA£¬Top-1ÎÄµµ
+python run_example.py
 ```
 
-#### 2. ÎÄµµ×éºÏ·ÖÎö (`hotpair.py`)
-
-·ÖÎöÎÄµµ×éºÏµÄÓÐÐòºÍÎÞÐò¼ìË÷Ä£Ê½£º
-
+### 3. åŸºæœ¬åˆ†æž
 ```bash
-# »ù±¾ÓÃ·¨
-python hotpair.py --dataset [mmlu|nq|hotpotqa|triviaqa] --topk [K]
+# å¯¹MMLUæ•°æ®é›†è¿›è¡Œtop-5åˆ†æž
+python wikipead_all.py --dataset mmlu --topk 5
 
-# Ê¾ÀýÃüÁî
-python hotpair.py --dataset mmlu --topk 3
-python hotpair.py --dataset nq --topk 5
+# å¯¹Natural Questionsæ•°æ®é›†è¿›è¡Œtop-10åˆ†æž
+python wikipead_all.py --dataset nq --topk 10
 ```
 
-#### 3. ¿çÊý¾Ý¼¯Í¼±íÉú³É (`draw_combo_chart.py`)
+## ? å¯è§†åŒ–å·¥å…·
 
-Éú³É¿çÊý¾Ý¼¯µÄ¶Ô±È·ÖÎöÍ¼±í£º
-
+### 1. ç»¼åˆå¯¹æ¯”å›¾è¡¨
 ```bash
-python draw_combo_chart.py  # ×Ô¶¯¶ÁÈ¡ÒÑÉú³ÉµÄÍ³¼ÆÎÄ¼þ
+python draw_comprehensive_chart.py
+```
+ç”Ÿæˆæ‰€æœ‰æ•°æ®é›†çš„å¤šç»´åº¦å¯¹æ¯”å›¾è¡¨ï¼ŒåŒ…æ‹¬ï¼š
+- æ–‡æ¡£é¢‘çŽ‡åˆ†å¸ƒå¯¹æ¯”
+- N-gramåˆ†å¸ƒå¯¹æ¯”  
+- HNSWé«˜å±‚èŠ‚ç‚¹åˆ†å¸ƒå¯¹æ¯”
+- ç»¼åˆä»ªè¡¨æ¿
+
+### 2. å•æ•°æ®é›†è¯¦ç»†åˆ†æž
+```bash
+python draw_single_dataset_chart.py --dataset mmlu --topk 5
+```
+ä¸ºæŒ‡å®šæ•°æ®é›†ç”Ÿæˆè¯¦ç»†çš„åˆ†æžä»ªè¡¨æ¿ï¼ŒåŒ…æ‹¬ï¼š
+- Top-10æ–‡æ¡£é¢‘çŽ‡åˆ†å¸ƒ
+- HNSWå±‚çº§åˆ†å¸ƒ
+- å„ç§N-gramåˆ†å¸ƒ
+- ç»¼åˆæŒ‡æ ‡å¯¹æ¯”
+
+## ? è¾“å‡ºæ–‡ä»¶è¯´æ˜Ž
+
+### ç»Ÿè®¡æ–‡ä»¶ (data/stats/)
+- `freq_stats_{dataset}_top{k}.txt`: æ–‡æ¡£é¢‘çŽ‡ç»Ÿè®¡
+- `ngram_stats_n{n}_{dataset}_top{k}.txt`: N-gramç»Ÿè®¡  
+- `high_level_stats_{dataset}_top{k}.txt`: é«˜å±‚èŠ‚ç‚¹ç»Ÿè®¡
+
+### å›¾è¡¨æ–‡ä»¶ (output/charts/)
+- `hot_docs_distribution_{dataset}_top{k}.png`: æ–‡æ¡£é¢‘çŽ‡Log-Logå›¾
+- `ngram_distribution_n{n}_{dataset}_top{k}.png`: N-gramåˆ†å¸ƒå›¾
+- `high_level_distribution_{dataset}_top{k}.png`: é«˜å±‚èŠ‚ç‚¹åˆ†å¸ƒå›¾
+- `{dataset}_top{k}_dashboard.png`: å•æ•°æ®é›†è¯¦ç»†ä»ªè¡¨æ¿
+- `comprehensive_dashboard.png`: ç»¼åˆå¯¹æ¯”ä»ªè¡¨æ¿
+
+## ?? é…ç½®è¯´æ˜Ž
+
+### æ¨¡åž‹é…ç½®
+é¡¹ç›®æ”¯æŒæœ¬åœ°ç¼“å­˜æ¨¡åž‹ï¼Œä¼˜å…ˆä½¿ç”¨é¡ºåºï¼š
+1. `L:\huggingface\cache\hub\models--BAAI--bge-large-en-v1.5`
+2. `L:\huggingface\cache\hub`
+3. æœ¬åœ°æ¨¡åž‹ç›®å½•
+4. åœ¨çº¿ä¸‹è½½
+
+### æ•°æ®é›†æ”¯æŒ
+- **MMLU**: å¤§è§„æ¨¡å¤šä»»åŠ¡è¯­è¨€ç†è§£
+- **Natural Questions**: è‡ªç„¶é—®é¢˜å›žç­”
+- **HotpotQA**: å¤šè·³æŽ¨ç†é—®ç­”
+- **TriviaQA**: çäº‹é—®ç­”
+
+## ? ä½¿ç”¨æŠ€å·§
+
+### 1. æ‰¹é‡åˆ†æž
+```bash
+# åˆ†æžæ‰€æœ‰æ•°æ®é›†çš„top-1, top-5, top-10
+for dataset in mmlu nq hotpotqa triviaqa; do
+    for topk in 1 5 10; do
+        python wikipead_all.py --dataset $dataset --topk $topk
+    done
+done
+
+# ç”Ÿæˆç»¼åˆå›¾è¡¨
+python draw_comprehensive_chart.py
 ```
 
-### Ö§³ÖµÄÊý¾Ý¼¯
+### 2. å†…å­˜ä¼˜åŒ–
+- å¯¹äºŽå†…å­˜æœ‰é™çš„çŽ¯å¢ƒï¼Œå»ºè®®å…ˆä»Žå°çš„top-kå€¼å¼€å§‹
+- Wikipediaæ•°æ®å’ŒåµŒå…¥æ–‡ä»¶ä¼šè¢«ç¼“å­˜ï¼Œé¦–æ¬¡è¿è¡Œæ—¶é—´è¾ƒé•¿
 
-| Êý¾Ý¼¯ | ±êÊ¶·û | ÃèÊö |
-|:---|:---|:---|
-| MMLU | `mmlu` | Massive Multitask Language Understanding |
-| Natural Questions | `nq` | Google×ÔÈ»ÎÊÌâÊý¾Ý¼¯ |
-| HotpotQA | `hotpotqa` | ¶àÌøÍÆÀíÎÊ´ðÊý¾Ý¼¯ |
-| TriviaQA | `triviaqa` | °Ù¿ÆÖªÊ¶ÎÊ´ðÊý¾Ý¼¯ |
+### 3. å›¾è¡¨å®šåˆ¶
+- ä¿®æ”¹ `config.py` ä¸­çš„é¢œè‰²å’Œå°ºå¯¸é…ç½®
+- å›¾è¡¨æ”¯æŒä¸­æ–‡æ˜¾ç¤ºï¼ˆSimHeiã€Microsoft YaHeiå­—ä½“ï¼‰
 
-### Êä³öÎÄ¼þËµÃ÷
+## ? åˆ†æžç»“æžœè§£è¯»
 
-#### µ¥ÎÄµµ·ÖÎöÊä³ö (`hot.py`)
+### æ–‡æ¡£é¢‘çŽ‡åˆ†å¸ƒ
+- **Log-Logå›¾ä¸Šçš„ç›´çº¿**: è¡¨æ˜Žæœä»Žå¹‚å¾‹åˆ†å¸ƒ
+- **Top 10%å æ¯”**: çƒ­é—¨æ–‡æ¡£çš„é›†ä¸­ç¨‹åº¦
 
-- `output/charts/hot_docs_distribution_{dataset}_top{k}.png`: ÎÄµµÆµÂÊ·Ö²¼¿ÉÊÓ»¯Í¼±í
-- `data/stats/freq_stats_{dataset}_top{k}.txt`: ÏêÏ¸ÆµÂÊÍ³¼ÆÐÅÏ¢£¬°üº¬Top-10ÈÈÃÅÎÄµµ
+### N-gramåˆ†æž
+- **é«˜é¢‘N-gram**: æ­ç¤ºæ£€ç´¢åºåˆ—çš„æ¨¡å¼
+- **åˆ†å¸ƒç‰¹å¾**: ä¸åŒé•¿åº¦åºåˆ—çš„é›†ä¸­åº¦å·®å¼‚
 
-#### ×éºÏ·ÖÎöÊä³ö (`hotpair.py`)
+### HNSWå±‚çº§åˆ†æž
+- **é«˜å±‚èŠ‚ç‚¹å æ¯”**: çƒ­é—¨æ–‡æ¡£åœ¨ç´¢å¼•ç»“æž„ä¸­çš„ä½ç½®
+- **å±‚çº§åˆ†å¸ƒ**: ç´¢å¼•æ•ˆçŽ‡ä¸Žæ–‡æ¡£çƒ­åº¦çš„å…³ç³»
 
-- `output/charts/ordered_combo_distribution_{dataset}_top{k}.png`: ÓÐÐò×éºÏÆµÂÊ·Ö²¼Í¼
-- `output/charts/unordered_combo_distribution_{dataset}_top{k}.png`: ÎÞÐò×éºÏÆµÂÊ·Ö²¼Í¼
-- `data/stats/ordered_combo_stats_{dataset}_top{k}.txt`: ÓÐÐò×éºÏÍ³¼ÆÐÅÏ¢
-- `data/stats/unordered_combo_stats_{dataset}_top{k}.txt`: ÎÞÐò×éºÏÍ³¼ÆÐÅÏ¢
+## ? å¸¸è§é—®é¢˜
 
-#### ÏµÍ³ÎÄ¼þ
+### 1. ç¼–ç é—®é¢˜
+å¦‚æžœé‡åˆ°ä¸­æ–‡æ˜¾ç¤ºé—®é¢˜ï¼Œç¡®ä¿å·²å®‰è£…ä¸­æ–‡å­—ä½“ï¼š
+- Windows: SimHeiã€Microsoft YaHei
+- Linux: å®‰è£…ä¸­æ–‡å­—ä½“åŒ…
 
-- `doc_embeddings.npy`: WikipediaÎÄµµÇ¶Èë£¨Ê×´ÎÔËÐÐÉú³É£©
-- `hnsw_index.bin`: FAISS HNSWË÷ÒýÎÄ¼þ£¨Ê×´ÎÔËÐÐÉú³É£©
+### 2. å†…å­˜ä¸è¶³
+- å‡å°‘æ‰¹æ¬¡å¤§å°ï¼šä¿®æ”¹ `EMBEDDING_BATCH_SIZE`
+- ä½¿ç”¨æ›´å°çš„Wikipediaå­é›†
+- åˆ†æ‰¹å¤„ç†ä¸åŒæ•°æ®é›†
 
-## ? ÏîÄ¿½á¹¹
+### 3. æ¨¡åž‹ä¸‹è½½
+- é…ç½®æœ¬åœ°ç¼“å­˜è·¯å¾„é¿å…é‡å¤ä¸‹è½½
+- ä½¿ç”¨ä»£ç†æˆ–é•œåƒåŠ é€Ÿä¸‹è½½
 
-```
-hotpaper-text/
-©À©¤©¤ data/stats/           # Í³¼Æ½á¹ûÎÄ¼þ¼Ð
-©¦   ©À©¤©¤ ordered_combo_stats_*.txt
-©¦   ©¸©¤©¤ unordered_combo_stats_*.txt
-©À©¤©¤ output/charts/        # Í¼±íÊä³öÎÄ¼þ¼Ð
-©À©¤©¤ hot.py               # ºËÐÄ·ÖÎö½Å±¾
-©À©¤©¤ hotpair.py           # ×éºÏ·ÖÎö½Å±¾
-©À©¤©¤ draw_chart.py        # µ¥Êý¾Ý¼¯Í¼±í»æÖÆ
-©À©¤©¤ draw_combo_chart.py  # ¿çÊý¾Ý¼¯¶Ô±ÈÍ¼±í
-©À©¤©¤ dateset.py           # Êý¾Ý¼¯¼ÓÔØÄ£¿é
-©À©¤©¤ requirements.txt     # PythonÒÀÀµ
-©À©¤©¤ commands.txt         # Ê¾ÀýÃüÁî
-©¸©¤©¤ README.md           # ÏîÄ¿ÎÄµµ
-```
+## ? æŠ€æœ¯æ ˆ
+- **åµŒå…¥æ¨¡åž‹**: BAAI/bge-large-en-v1.5
+- **å‘é‡æ£€ç´¢**: FAISS HNSW
+- **æ•°æ®å¯è§†åŒ–**: Matplotlib
+- **æ•°æ®å¤„ç†**: NumPy, Pandas
+- **æ•°æ®é›†**: HuggingFace Datasets
 
-## ? Ó¦ÓÃ³¡¾°
+## ? è´¡çŒ®
+æ¬¢è¿Žæäº¤Issueå’ŒPull Requestæ¥æ”¹è¿›è¿™ä¸ªå·¥å…·ï¼
 
-±¾¹¤¾ß¿ÉÒÔ°ïÖúÑÐ¾¿Õß£º
-
-1. **Ê¶±ðÈÈÃÅ¼ìË÷ÎÄµµ**: ·¢ÏÖRAGÏµÍ³ÖÐ±»Æµ·±¼ìË÷µÄWikipediaÎÄµµ
-2. **·ÖÎö·Ö²¼Ä£Ê½**: Í¨¹ýLog-LogÍ¼¹Û²ìÊÇ·ñ×ñÑ­³¤Î²·Ö²¼
-3. **ÆÀ¹À¼ìË÷¶àÑùÐÔ**: ÁË½â¼ìË÷½á¹ûµÄ¼¯ÖÐ³Ì¶È
-4. **ÓÅ»¯RAGÏµÍ³**: »ùÓÚÈÈ¶È·Ö²¼¹æÂÉ¸Ä½ø¼ìË÷²ßÂÔ
-5. **¿çÊý¾Ý¼¯±È½Ï**: ·ÖÎö²»Í¬ÎÊ´ðÊý¾Ý¼¯µÄ¼ìË÷ÌØÐÔ²îÒì
-
-## ? ¼¼ÊõÔ­Àí
-
-### ¹¤×÷Á÷³Ì
-
-```mermaid
-flowchart TD
-    A[¼ÓÔØWikipediaÖªÊ¶¿â] --> B[Éú³É/¼ÓÔØÎÄµµÇ¶Èë]
-    B --> C[¹¹½¨/¼ÓÔØFAISS HNSWË÷Òý]
-    C --> D[¼ÓÔØ²éÑ¯Êý¾Ý¼¯]
-    D --> E[Ö´ÐÐTop-K¼ìË÷]
-    E --> F[Í³¼ÆÎÄµµÆµÂÊ]
-    F --> G[Éú³ÉÆµÂÊ·Ö²¼Í¼]
-    G --> H[Êä³öÍ³¼Æ±¨¸æ]
-```
-
-### ºËÐÄËã·¨
-
-1. **ÓïÒåÇ¶Èë**: Ê¹ÓÃBAAI/bge-large-en-v1.5Ä£ÐÍ½«ÎÄµµºÍ²éÑ¯×ª»»Îª1024Î¬ÏòÁ¿
-2. **ÏàËÆ¶È¼ìË÷**: ÀûÓÃFAISS HNSWË÷Òý½øÐÐ¸ßÐ§µÄ½üËÆ×î½üÁÚËÑË÷
-3. **ÆµÂÊÍ³¼Æ**: Í³¼ÆÃ¿¸öÎÄµµIDÔÚËùÓÐ²éÑ¯¼ìË÷½á¹ûÖÐµÄ³öÏÖÆµ´Î
-4. **·Ö²¼·ÖÎö**: Ê¹ÓÃLog-Log×ø±êÏµ¿ÉÊÓ»¯ÆµÂÊ·Ö²¼£¬Ê¶±ð³¤Î²ÌØÐÔ
-
-## ?? ×¢ÒâÊÂÏî
-
-- **Ê×´ÎÔËÐÐ**: ÐèÒªÏÂÔØ²¢Éú³ÉWikipediaÊý¾Ý¼¯µÄÇ¶Èë£¬Ô¤¼ÆÐèÒª½Ï³¤Ê±¼ä
-- **ÄÚ´æÒªÇó**: Ç¶ÈëÎÄ¼þºÍË÷ÒýÎÄ¼þ½Ï´ó£¨Ô¼25MB+£©£¬ÍÆ¼ö8GB+ÄÚ´æ»·¾³
-- **NumPy°æ±¾**: ±ØÐëÊ¹ÓÃNumPy 1.x°æ±¾£¬ÒòÎªFAISSÄ£¿éÓëNumPy 2.x²»¼æÈÝ
-- **Ä£ÐÍ»º´æ**: ÓÅÏÈÊ¹ÓÃ±¾µØ»º´æµÄHuggingFaceÄ£ÐÍ£¨Èç¹û´æÔÚ£©
-- **ÎÄ¼þ±àÂë**: ²¿·ÖÍ³¼ÆÎÄ¼þ¿ÉÄÜÊ¹ÓÃGB2312±àÂë£¬¶ÁÈ¡Ê±Ðè×¢Òâ
-
-## ? ¹ÊÕÏÅÅ³ý
-
-### ³£¼ûÎÊÌâ
-
-1. **NumPy°æ±¾³åÍ»**: ½µ¼¶µ½NumPy 1.x°æ±¾
-2. **ÄÚ´æ²»×ã**: Ôö¼ÓÏµÍ³ÄÚ´æ»òÊ¹ÓÃ¸üÐ¡µÄÊý¾Ý¼¯
-3. **Ä£ÐÍÏÂÔØÊ§°Ü**: ¼ì²éÍøÂçÁ¬½Ó»òÊ¹ÓÃ±¾µØÄ£ÐÍ»º´æ
-4. **ÖÐÎÄÏÔÊ¾ÎÊÌâ**: È·±£°²×°ÁËSimHei»òMicrosoft YaHei×ÖÌå
-
-## ? Ðí¿ÉÖ¤
-
-±¾ÏîÄ¿Ê¹ÓÃMITÐí¿ÉÖ¤ - Ïê¼ûLICENSEÎÄ¼þ¡£
-
-## ? ¹±Ï×
-
-»¶Ó­Ìá½»IssueºÍPull RequestÀ´¸Ä½øÏîÄ¿¡£
-
-## ? ÁªÏµ
-
-ÈçÓÐÎÊÌâ»ò½¨Òé£¬ÇëÍ¨¹ýGitHub IssuesÁªÏµ¡£
+## ? è®¸å¯è¯
+MIT License

@@ -1,39 +1,14 @@
-# 虚拟环境
-.venv/
-venv/
-env/
-ENV/
-
-# 模型和索引文件
+# 大型数据文件
 *.npy
 *.bin
-*.pkl
-*.h5
-*.hdf5
+wikipedia_data/
+dataset_cache/
 
-# 生成的图片和统计文件
-*.png
-*.jpg
-*.jpeg
-*.pdf
-freq_stats_*.txt
-
-# 大型数据文件和模型缓存
-doc_embeddings.npy
-hnsw_index.bin
-rag-mini-wikipedia/
-
-# HuggingFace缓存
-.cache/
-hf_cache/
-
-# Python缓存
+# Python相关
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-
-# 分发 / 打包
 .Python
 build/
 develop-eggs/
@@ -50,16 +25,17 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # PyInstaller
 *.manifest
 *.spec
 
-# 安装器日志
+# Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
 
-# 单元测试 / 覆盖率报告
+# Unit test / coverage reports
 htmlcov/
 .tox/
 .coverage
@@ -71,46 +47,29 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# 环境变量
+# Virtual environments
 .env
 .venv
-ENV/
 env/
-.ENV/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# IDE设置
+# IDE相关
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# 操作系统生成的文件
+# 操作系统相关
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
 # 日志文件
 *.log
 
-# 临时统计文件（保留在data/stats/目录中的除外）
-high_level_stats_*.txt
-ngram_stats_*.txt
-ordered_combo_stats_*.txt
-unordered_combo_stats_*.txt
-
-# 但保留示例数据和结果文件夹结构
-!data/
-!output/
-!data/stats/.gitkeep
-!output/charts/.gitkeep
+# 临时文件
+*.tmp
+*.temp
