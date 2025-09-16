@@ -90,6 +90,14 @@
 - **推荐配置**: top10, top16, top32
 - **特色**: 一站式分析工具，功能最全面，适合大规模数据研究
 
+##### 6. `wikipead_all_degree.py` - 节点度分析专用版 🆕
+- **数据集**: Wikipedia100k (约100,000文档)
+- **功能**: 专门分析HNSW节点度分布的增强版本
+- **输入**: 数据集名称、Top-K参数、批次大小
+- **输出**: 文档频率、节点度分布、热门文档度统计等
+- **推荐配置**: top10, top16, top32
+- **特色**: 增强的度分析功能，过滤无效度值，支持批量处理
+
 ### 📊 可视化工具模块
 
 #### 6. `draw_chart.py` - 基础数据集对比图表
@@ -163,6 +171,7 @@ hotpaper-text/
 │   ├── hot.py                        # 基础文档频率分析
 │   ├── hotpair.py                    # 文档组合分析
 │   ├── wikipead_all.py               # 综合多维度分析⭐
+│   ├── wikipead_all_degree.py        # 节点度分析专用版🆕
 │   ├── hot_pair_in_seq.py            # 序列文档对分析
 │   └── hotpaper_HNSWnode.py          # HNSW节点层级分析
 ├── 📊 可视化工具模块
@@ -326,6 +335,32 @@ python wikipead_all.py --dataset triviaqa --topk 16
 python wikipead_all.py --dataset triviaqa --topk 32
 ```
 
+#### 节点度分析专用版 (wikipead_all_degree.py) 🆕
+```bash
+# 增强的度分析功能，过滤无效度值，支持批量处理
+# 推荐配置: top10, top16, top32
+
+# MMLU 数据集
+python wikipead_all_degree.py --dataset mmlu --topk 10 --batch_size 512
+python wikipead_all_degree.py --dataset mmlu --topk 16 --batch_size 512
+python wikipead_all_degree.py --dataset mmlu --topk 32 --batch_size 512
+
+# Natural Questions 数据集
+python wikipead_all_degree.py --dataset nq --topk 10 --batch_size 512
+python wikipead_all_degree.py --dataset nq --topk 16 --batch_size 512
+python wikipead_all_degree.py --dataset nq --topk 32 --batch_size 512
+
+# HotpotQA 数据集
+python wikipead_all_degree.py --dataset hotpotqa --topk 10 --batch_size 512
+python wikipead_all_degree.py --dataset hotpotqa --topk 16 --batch_size 512
+python wikipead_all_degree.py --dataset hotpotqa --topk 32 --batch_size 512
+
+# TriviaQA 数据集
+python wikipead_all_degree.py --dataset triviaqa --topk 10 --batch_size 512
+python wikipead_all_degree.py --dataset triviaqa --topk 16 --batch_size 512
+python wikipead_all_degree.py --dataset triviaqa --topk 32 --batch_size 512
+```
+
 ### 5. 可视化命令
 
 #### 自动化图表生成（无需参数）
@@ -453,6 +488,32 @@ python wikipead_all.py --dataset triviaqa --topk 16
 python wikipead_all.py --dataset triviaqa --topk 32
 ```
 
+#### 节点度分析专用版 (wikipead_all_degree.py)
+```bash
+# 数据准备（如需要）
+python download_datasets.py
+
+# MMLU 数据集节点度分析
+python wikipead_all_degree.py --dataset mmlu --topk 10 --batch_size 512
+python wikipead_all_degree.py --dataset mmlu --topk 16 --batch_size 512
+python wikipead_all_degree.py --dataset mmlu --topk 32 --batch_size 512
+
+# Natural Questions 数据集节点度分析
+python wikipead_all_degree.py --dataset nq --topk 10 --batch_size 512
+python wikipead_all_degree.py --dataset nq --topk 16 --batch_size 512
+python wikipead_all_degree.py --dataset nq --topk 32 --batch_size 512
+
+# HotpotQA 数据集节点度分析
+python wikipead_all_degree.py --dataset hotpotqa --topk 10 --batch_size 512
+python wikipead_all_degree.py --dataset hotpotqa --topk 16 --batch_size 512
+python wikipead_all_degree.py --dataset hotpotqa --topk 32 --batch_size 512
+
+# TriviaQA 数据集节点度分析
+python wikipead_all_degree.py --dataset triviaqa --topk 10 --batch_size 512
+python wikipead_all_degree.py --dataset triviaqa --topk 16 --batch_size 512
+python wikipead_all_degree.py --dataset triviaqa --topk 32 --batch_size 512
+```
+
 ### 可视化和报告生成命令
 
 #### 自动化图表生成（无需参数）
@@ -555,7 +616,7 @@ python generate_wikipead_analysis_report.py --dataset mmlu --topk 10
 - `wikipedia_data/`: Wikipedia数据缓存目录
 - `dataset_cache/`: 查询数据集缓存目录
 
-## ?? 配置说明
+## 🔧 配置说明
 
 ### 模型配置
 项目支持本地缓存模型，优先使用顺序：
@@ -570,7 +631,7 @@ python generate_wikipead_analysis_report.py --dataset mmlu --topk 10
 - **HotpotQA**: 多跳推理问答
 - **TriviaQA**: 琐事问答
 
-## ? 使用技巧
+## 💡 使用技巧
 
 ### 1. 批量分析
 ```bash
@@ -593,7 +654,7 @@ python draw_comprehensive_chart.py
 - 修改 `config.py` 中的颜色和尺寸配置
 - 图表支持中文显示（SimHei、Microsoft YaHei字体）
 
-## ? 分析结果解读
+## 📈 分析结果解读
 
 ### 文档频率分布
 - **Log-Log图上的直线**: 表明服从幂律分布
@@ -607,7 +668,7 @@ python draw_comprehensive_chart.py
 - **高层节点占比**: 热门文档在索引结构中的位置
 - **层级分布**: 索引效率与文档热度的关系
 
-## ? 常见问题
+## ❓ 常见问题
 
 ### 1. 编码问题
 如果遇到中文显示问题，确保已安装中文字体：
@@ -623,17 +684,17 @@ python draw_comprehensive_chart.py
 - 配置本地缓存路径避免重复下载
 - 使用代理或镜像加速下载
 
-## ? 技术栈
+## 🛠️ 技术栈
 - **嵌入模型**: BAAI/bge-large-en-v1.5
 - **向量检索**: FAISS HNSW
 - **数据可视化**: Matplotlib
 - **数据处理**: NumPy, Pandas
 - **数据集**: HuggingFace Datasets
 
-## ? 贡献
+## 🤝 贡献
 欢迎提交Issue和Pull Request来改进这个工具！
 
-## ? 许可证
+## 📄 许可证
 MIT License
 ```
 
@@ -715,10 +776,23 @@ foreach ($dataset in @('mmlu', 'nq', 'hotpotqa', 'triviaqa')) {
     }
 }
 
+# 所有数据集的节点度分析 (Windows PowerShell)
+foreach ($dataset in @('mmlu', 'nq', 'hotpotqa', 'triviaqa')) {
+    foreach ($topk in @(10, 16, 32)) {
+        python wikipead_all_degree.py --dataset $dataset --topk $topk --batch_size 512
+    }
+}
+
 # Linux/macOS 版本
 for dataset in mmlu nq hotpotqa triviaqa; do
     for topk in 10 16 32; do
         python wikipead_all.py --dataset $dataset --topk $topk
+    done
+done
+
+for dataset in mmlu nq hotpotqa triviaqa; do
+    for topk in 10 16 32; do
+        python wikipead_all_degree.py --dataset $dataset --topk $topk --batch_size 512
     done
 done
 ```
